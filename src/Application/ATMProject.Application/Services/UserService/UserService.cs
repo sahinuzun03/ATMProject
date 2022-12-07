@@ -30,13 +30,7 @@ namespace ATMProject.Application.Services.UserService
         /*Kullanıcının yaratılmasını istemediğiniz için öyle bir metot yazmadım ama yazmanız gerekmektedir!!*/
         public async Task<Token> Login(LoginDTO model)
         {
-            var getUser = await _userRepo.GetFilteredFirstOrDefault(
-                select: x => new User
-                {
-                    UserName= x.UserName,
-                    Password = x.Password                    
-                },
-                where:x => x.UserName == model.UserName && x.Password == model.Password);
+            var getUser = await _userRepo.GetDefault(x => x.UserName == model.UserName && x.Password == model.Password);
 
 
             if (getUser != null)
@@ -50,6 +44,13 @@ namespace ATMProject.Application.Services.UserService
 
             return null;
 
+        }
+
+        public async Task CreateUser(CreateUserDTO model)
+        {
+            //Kullanıcı oluşturuldu.
+            var newUser = _mapper.Map<User>(model);
+            await _userRepo.Create(newUser);
         }
     }
 }

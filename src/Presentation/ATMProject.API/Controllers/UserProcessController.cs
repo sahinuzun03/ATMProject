@@ -20,9 +20,20 @@ namespace ATMProject.API.Controllers
             _userProcessService = userProcessService;
         }
 
+        public async Task<IActionResult> GetBalance([FromRoute] int userID)
+        {
+            var userBalance = _userProcessService.GetUserBalance(userID);
+            if(userBalance != null)
+            {
+                return Ok(userBalance);
+            }
+
+            return BadRequest("Geçersiz İşlem");
+        }
+
 
         //
-        [HttpPost]
+        [HttpPost("{id}")]
         public async Task<ActionResult> MoneyWithdraw([FromRoute]int userID,[FromBody] ProcessDTO model)
         {
             var userProcess =  await _userProcessService.AddUserProcess(model, userID);
@@ -32,7 +43,7 @@ namespace ATMProject.API.Controllers
                 return Ok(userProcess);
             }
 
-            return NotFound();
+            return BadRequest("İşlem Başarısız");
             
         }
     }

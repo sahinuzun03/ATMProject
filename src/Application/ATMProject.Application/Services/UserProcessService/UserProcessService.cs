@@ -26,6 +26,7 @@ namespace ATMProject.Application.Services.UserProcessService
             _mailService = mailService;
             _userProcessRepo = userProcessRepo;
         }
+
         public async Task<decimal> GetUserBalance(int UserId)
         {
             var getUser = await _userRepo.GetDefault(x => x.Id == UserId);

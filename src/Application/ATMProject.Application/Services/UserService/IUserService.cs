@@ -14,5 +14,6 @@ namespace ATMProject.Application.Services.UserService
 
         //Kullanıcı bilgilerini güncellemek için UpdateUser kullanabilirsiniz.
         Task<Token> Login(LoginDTO model); // Biz sadece giriş yapacağız diğer işlemler kullanıcının UserProcess kısmında yapılacak.
+        Task CreateUser(CreateUserDTO model);
     }
 }

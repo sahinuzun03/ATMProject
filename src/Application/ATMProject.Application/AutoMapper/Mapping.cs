@@ -15,6 +15,7 @@ namespace ATMProject.Application.AutoMapper
         {
             CreateMap<User, LoginDTO>().ReverseMap();
             CreateMap<UserProcess, ProcessDTO>().ReverseMap();
+            CreateMap<User,CreateUserDTO>().ReverseMap();
         }
 
     }
