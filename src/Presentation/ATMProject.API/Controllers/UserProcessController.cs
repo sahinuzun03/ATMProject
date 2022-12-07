@@ -31,8 +31,6 @@ namespace ATMProject.API.Controllers
             return BadRequest("Geçersiz İşlem");
         }
 
-
-        //
         [HttpPost("{id}")]
         public async Task<ActionResult> MoneyWithdraw([FromRoute]int userID,[FromBody] ProcessDTO model)
         {
