@@ -30,11 +30,20 @@ namespace ATMProject.Application.Services.UserProcessService
         public async Task<decimal> GetUserBalance(int UserId)
         {
             var getUser = await _userRepo.GetDefault(x => x.Id == UserId);
+            var userBalanceList = await _userProcessRepo.GetDefaults(x => x.UserId == UserId);
             decimal userBalance = 0;
-            foreach (var userProcess in getUser.UserProcesses)
+            foreach (var item in userBalanceList)
             {
-                userBalance += userProcess.Amount; //Buradaki metot sayesinde kullanıcının yapmış olduğu işlemlere göre hareket edebiliceğim.
+                if(item.Process == Process.Deposit)
+                {
+                    userBalance += item.Amount;
+                }
+                else
+                {
+                    userBalance -= item.Amount;
+                }
             }
+
             return userBalance;
         }
         
@@ -43,15 +52,25 @@ namespace ATMProject.Application.Services.UserProcessService
             var getUser = await _userRepo.GetDefault(x => x.Id == userID);
             StaticMailModel.successMail.ToEmail = getUser.EmailAdress;
             StaticMailModel.failedMail.ToEmail = getUser.EmailAdress;
-            var userProcess = _mapper.Map<UserProcess>(model);
+            //var userProcess = _mapper.Map<UserProcess>(model); --> DTO kısmında veri değişikliğine gittiğim için burası çalışmaz o yüzdenşöyle bir şey yaptık
+
+            UserProcess newUserProcess = new UserProcess();
+            newUserProcess.Process = model.Process;
+            if (model.Process == Process.Withdraw)
+            {
+                newUserProcess.Amount = model.Amount * (-1);
+            }
+            else
+                newUserProcess.Amount = model.Amount;
+            
             var userBalance = await GetUserBalance(userID);
             
 
-            if (userProcess.Process == Process.Withdraw)
+            if (newUserProcess.Process == Process.Withdraw)
             {
-                if (userBalance > userProcess.Amount)
+                if (userBalance > newUserProcess.Amount)
                 {
-                    userProcess.Amount *= -1;
+                    newUserProcess.Amount *= -1;
                     _mailService.SendEmailAsync(StaticMailModel.successMail); // Para çekme işlemi başarılı olduğu zaman.
                 }
                 else
@@ -68,9 +87,9 @@ namespace ATMProject.Application.Services.UserProcessService
             ///<summary>
             ///Buradan belki gelen process'in içerisindeki user'a atama yapıp hareketlenme yapabilirim.
             ///</summary>
-            getUser.UserProcesses.Add(userProcess);
-            await _userProcessRepo.Create(userProcess);
-            return userProcess;
+            getUser.UserProcesses.Add(newUserProcess);
+            await _userRepo.Update(getUser);
+            return newUserProcess;
 
         }
     }

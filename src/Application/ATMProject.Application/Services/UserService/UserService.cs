@@ -37,7 +37,7 @@ namespace ATMProject.Application.Services.UserService
             {
                 Token token = _tokenHandler.CreateAccessToken(getUser);
                 getUser.RefreshToken= token.RefreshToken;
-                getUser.RefreshTokenEndDate = token.Expiration.AddMinutes(3);
+                getUser.RefreshTokenEndDate = token.Expiration.AddMinutes(45);
                 await _userRepo.Update(getUser);
                 return token;
             }

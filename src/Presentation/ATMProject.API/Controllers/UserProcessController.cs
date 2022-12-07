@@ -9,7 +9,7 @@ namespace ATMProject.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserProcessController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,7 +20,8 @@ namespace ATMProject.API.Controllers
             _userProcessService = userProcessService;
         }
 
-        public async Task<IActionResult> GetBalance([FromRoute] int userID)
+        [HttpGet("{userID}")]
+        public async Task<IActionResult> GetBalance(int userID)
         {
             var userBalance = _userProcessService.GetUserBalance(userID);
             if(userBalance != null)
@@ -31,8 +32,8 @@ namespace ATMProject.API.Controllers
             return BadRequest("Geçersiz İşlem");
         }
 
-        [HttpPost("{id}")]
-        public async Task<ActionResult> MoneyWithdraw([FromRoute]int userID,[FromBody] ProcessDTO model)
+        [HttpPost("{userID}")]
+        public async Task<ActionResult> MoneyWithdraw(int userID,[FromBody] ProcessDTO model)
         {
             var userProcess =  await _userProcessService.AddUserProcess(model, userID);
             

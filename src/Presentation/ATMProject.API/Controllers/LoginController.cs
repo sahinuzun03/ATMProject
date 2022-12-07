@@ -19,7 +19,7 @@ namespace ATMProject.API.Controllers
             var token = await _userService.Login(loginDTO);
             if(token != null)
             {
-                return Ok();
+                return Ok(token);
             }
 
             return NotFound();
