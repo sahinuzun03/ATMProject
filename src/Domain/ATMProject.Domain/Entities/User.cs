@@ -21,6 +21,7 @@ namespace ATMProject.Domain.Entities
         public DateTime? UpdateDate { get; set; }
         public DateTime? DeleteDate { get; set; }
         public Status Status { get; set; } = Status.Active;
+        public Roles Role { get; set; }
         public List<UserProcess> UserProcesses { get; set; }
 
         public User()

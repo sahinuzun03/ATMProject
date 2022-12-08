@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATMProject.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    
     public class UserProcessController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,7 +24,7 @@ namespace ATMProject.API.Controllers
         [HttpGet("{userID}")]
         public async Task<IActionResult> GetBalance(int userID)
         {
-            var userBalance = _userProcessService.GetUserBalance(userID);
+            var userBalance = await _userProcessService.GetUserBalance(userID);
             if(userBalance != null)
             {
                 return Ok(userBalance);

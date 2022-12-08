@@ -51,6 +51,9 @@ namespace ATMProject.Infastructure.Migrations
                     b.Property<DateTime?>("RefreshTokenEndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 

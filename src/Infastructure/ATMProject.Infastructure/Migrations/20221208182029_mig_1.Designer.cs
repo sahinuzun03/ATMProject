@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATMProject.Infastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221203004300_mig_1")]
+    [Migration("20221208182029_mig_1")]
     partial class mig_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,9 @@ namespace ATMProject.Infastructure.Migrations
 
                     b.Property<DateTime?>("RefreshTokenEndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

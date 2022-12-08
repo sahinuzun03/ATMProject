@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using ATMProject.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ATMProject.Application.Services.AnotherService
 {
@@ -22,7 +23,8 @@ namespace ATMProject.Application.Services.AnotherService
 
         public Token CreateAccessToken(User user)
         {
-            Token tokenInstance = new Token();
+            //Token oluşturucu sınıfında bir örnek alıyoruz.
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
             //Security  Key'in simetriğini alıyoruz.
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:SecurityKey"]));
@@ -30,25 +32,23 @@ namespace ATMProject.Application.Services.AnotherService
             //Şifrelenmiş kimliği oluşturuyoruz.
             SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            //Oluşturulacak token ayarlarını veriyoruz.
-            tokenInstance.Expiration = DateTime.Now.AddMinutes(5);
-            JwtSecurityToken securityToken = new JwtSecurityToken(
-                issuer: _configuration["Token:Issuer"],
-                audience: _configuration["Token:Audience"],
-                expires: tokenInstance.Expiration,//Token süresini 5 dk olarak belirliyorum
-                notBefore: DateTime.Now,//Token üretildikten ne kadar süre sonra devreye girsin ayarlıyouz.
-                signingCredentials: signingCredentials
-                );
+            var expiry = DateTime.Now.AddDays(1);
 
-            //Token oluşturucu sınıfında bir örnek alıyoruz.
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email,user.EmailAdress),
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.UserData,user.Id.ToString())
+            };
 
-            //Token üretiyoruz.
-            tokenInstance.AccessToken = tokenHandler.WriteToken(securityToken);
+            var token = new JwtSecurityToken(_configuration["Token:Issuer"], _configuration["Token:Audience"], claims, null, expiry, signingCredentials);
 
-            //Refresh Token üretiyoruz.
-            tokenInstance.RefreshToken = CreateRefreshToken();
-            return tokenInstance;
+            Token userToken = new Token();
+
+            userToken.AccessToken = tokenHandler.WriteToken(token);
+            userToken.RefreshToken = CreateRefreshToken();
+
+            return userToken;
         }
         //Refresh Token üretecek metot.
         public string CreateRefreshToken()
@@ -62,3 +62,20 @@ namespace ATMProject.Application.Services.AnotherService
         }
     }
 }
+
+/*
+ //Oluşturulacak token ayarlarını veriyoruz.
+           tokenInstance.Expiration = DateTime.Now.AddMinutes(5);
+           JwtSecurityToken securityToken = new JwtSecurityToken(
+               issuer: _configuration["Token:Issuer"],
+               audience: _configuration["Token:Audience"],
+               expires: tokenInstance.Expiration,//Token süresini 5 dk olarak belirliyorum
+               notBefore: DateTime.Now,//Token üretildikten ne kadar süre sonra devreye girsin ayarlıyouz.
+               signingCredentials: signingCredentials
+               );
+           //Token üretiyoruz.
+           tokenInstance.AccessToken = tokenHandler.WriteToken(securityToken);
+
+           //Refresh Token üretiyoruz.
+           tokenInstance.RefreshToken = CreateRefreshToken();
+           return tokenInstance; */

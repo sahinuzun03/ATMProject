@@ -16,5 +16,7 @@ namespace ATMProject.Application.Models.DTOs
         public string Password { get; set; }
         public Status Status => Status.Active;
         public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        public Roles Role { get; set; }
     }
 }
